@@ -8,7 +8,7 @@ import re
 import sqlite3 as lite
 from contextlib import closing
 
-DATABASE = 'hw13.db'
+DATABASE = 'book.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
@@ -17,6 +17,152 @@ PASSWORD = 'password'
 app = Flask(__name__)
 app.config.from_object(__name__)
 
+con = lite.connect('book.db')
+
+cur = con.cursor()
+
+cur.executescript("""
+    DROP TABLE IF EXISTS users;
+    DROP TABLE IF EXISTS books;
+    DROP TABLE IF EXISTS clouds;
+    CREATE TABLE users(
+        Identifier INTEGER PRIMARY KEY, 
+        FirstName TEXT, 
+        LastName TEXT, 
+        UserId TEXT, 
+        UserPassword TEXT
+    );
+    CREATE TABLE books(
+        Identifier INTEGER PRIMARY KEY, 
+        Title TEXT, 
+        Author TEXT
+    );
+    CREATE TABLE clouds(
+        Identifier INTEGER PRIMARY KEY, 
+        UserObject INTEGER, 
+        Book INTEGER,
+        Name TEXT, 
+        FOREIGN KEY (UserObject) REFERENCES users(Identifier), 
+        FOREIGN KEY (Book) REFERENCES books(Identifier)
+    );
+    """)
+
+cur.execute('INSERT into users VALUES (101,"Admin","User","admin","password");')
+
+con.commit()
+
+def connect_db():
+    return lite.connect(app.config['DATABASE'])
+
+@app.before_request
+def before_request():
+    g.db = connect_db()
+
+@app.teardown_request
+def teardown_request(exception):
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()
+
+#app = Flask(__name__)
+app.secret_key = 'lasso91'
+
+
+def getSessionInfo ():
+    token = ''
+    if session['User_Id']>0:
+        token = True
+    return token
+
+@app.route('/')
+def index():
+    print session
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    error = None
+
+    # Check if we alredy have sessionInfo
+    if len(session) == 0 or session['Logged_In']=='N':
+        if request.method == 'POST':
+            print 'entering login POST'
+
+            user_data = LoginUser(request.form['email'],request.form['password'])
+
+            #if request.form['email'] == 'admin' and request.form['password'] == 'password':
+            if user_data['Success']:
+                session['Logged_In'] = 'Y'
+                session['User_Name'] = user_data['First Name']
+                session['User_Id'] = user_data['UserID']
+                return redirect("/")
+            else:
+                session['Logged_In'] = 'N'
+                error = 'Incorrect login or password'
+                return render_template('Login.html', error=error)
+        else:
+            return render_template('Login.html')
+    else:
+        #validate Sessions Info
+        #return render_template('login.html', error=error)
+        return redirect('/dashboard')
+
+@app.route('/signup', methods=['GET','POST'])
+def createUser():
+    session.pop('User_Id', None)
+    session.pop('Logged_In', None)
+    session.pop('User_Name', None)
+    error = None
+
+    print session
+
+    if request.method == 'POST':
+        print 'entering Sign Up POST'
+
+
+    else:
+        #validate Sessions Info
+        return render_template('newuser.html')
+
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('User_Id', None)
+    session.pop('Logged_In', None)
+    session.pop('User_Name', None)
+    return redirect(url_for('index'))
+
+def LoginUser(userid,password):
+    conns = g.db.execute('select Identifier, FirstName, LastName, UserId, UserPassword from users')
+    users = [dict(Identifier=row[0], FirstName=row[1], LastName=row[2], UserId=row[3], UserPassword=row[4])
+             for row in conns.fetchall()]
+
+    print 'entering login'
+    print users
+
+    for value in users:
+        if userid == value['UserId']:
+            if password == value['UserPassword']:
+                user_data = {
+                    "First Name": value["FirstName"],
+                    "UserID": value["Identifier"],
+                    "Success": True
+                }
+                print "Matching Id and Password"
+                return user_data
+
+    print userid
+    print password
+
+    error = 'Incorrect login or password'
+
+    user_data = {
+        "Success": False,
+        "ErrorMessage": error
+    }
+
+    return user_data
 
 
 if __name__ == '__main__':
