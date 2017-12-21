@@ -130,7 +130,7 @@
         background: -moz-linear-gradient(top,  #f2f2f2,  #f0f0f0);
     }
     .button {
-        background-color: #4CAF50;
+        background-color: #84B8E6;
         border: none;
         color: white;
         padding: 15px 32px;
@@ -147,14 +147,14 @@
     <header>
         <div>
             <span style="float:right;padding:15px">
-                Welcome, {{ userName }}
+                Welcome, {{ user_object[0] }}
             </span>
         </div>
     </header>
     <h2>Manage Your Books</h2>
 
     <div class="container">
-        <div class="subcontainer" style="background-color:#000000; color:#FFFFFF; padding:10px">
+        <div class="subcontainer" style="background-color:#84B8E6; color:#FFFFFF; padding:10px; text-align:center">
         PERSONAL BOOK CLOUDS
         </div>
         <div class="subcontainer" style="display:">
@@ -165,7 +165,6 @@
                         <tr>
                             <th>Identifier</th>
                             <th>UserObject</th>
-                            <th>Book</th>
                             <th>Name</th>
                         </tr>
                     </thead>
@@ -173,14 +172,18 @@
 
                    <!-- Table Body -->
                     <tbody>
-                        {% for value in books %}
-                        <tr>
-                            <td>{{ value.Identifier }} </td>
-                            <td>{{ value.Title }} </td>
-                            <td>{{ value.Author}} </td>
-                            <td>{{ value.PageCount }} </td>
-                            <td>{{ value.AverageRating }} </td>
-                        </tr><!-- Table Row -->
+                        {% for value in clouds %}
+                            {% if value.UserId == user_object[1] %}
+                                <tr>
+                                    <td>
+                                        <a href="cloud/{{ value.Identifier }}" target="_blank">
+                                            {{ value.Identifier }}
+                                        </a>
+                                    </td>
+                                    <td>{{ value.UserId }} </td>
+                                    <td>{{ value.Name}} </td>
+                                </tr><!-- Table Row -->
+                            {% endif %}
                         {% endfor %}
 
                     </tbody>
@@ -188,8 +191,11 @@
                 </table>
             </div>
         </div>
+        <div class="subcontainer">
+            <a href="/cloud/add" class="button">Add New Cloud</a>
+        </div>
 
-        <div class="subcontainer" style="background-color:#000000; color:#FFFFFF; padding:10px">
+        <div class="subcontainer" style="background-color:#84B8E6; color:#FFFFFF; padding:10px;text-align:center">
         TOP SEARCHED FOR BOOKS
         </div>
         <div class="subcontainer" style="display:">

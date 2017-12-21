@@ -25,6 +25,7 @@ cur.executescript("""
     DROP TABLE IF EXISTS users;
     DROP TABLE IF EXISTS books;
     DROP TABLE IF EXISTS clouds;
+    DROP TABLE IF EXISTS items;
     CREATE TABLE users(
         Identifier INTEGER PRIMARY KEY, 
         FirstName TEXT, 
@@ -42,16 +43,33 @@ cur.executescript("""
     CREATE TABLE clouds(
         Identifier INTEGER PRIMARY KEY, 
         UserObject INTEGER, 
-        Book INTEGER,
         Name TEXT, 
-        FOREIGN KEY (UserObject) REFERENCES users(Identifier), 
-        FOREIGN KEY (Book) REFERENCES books(Identifier)
+        FOREIGN KEY (UserObject) REFERENCES users(Identifier)
+    );
+    CREATE TABLE items (
+      Identifier INTEGER PRIMARY KEY,
+      UserObject INTEGER,
+      CloudObject INTEGER,
+      ContentObject INTEGER,
+      Name TEXT,
+      FOREIGN KEY (UserObject) REFERENCES users(Identifier),
+      FOREIGN KEY (CloudObject) REFERENCES clouds(Identifier),
+      FOREIGN KEY (ContentObject) REFERENCES books(Identifier)
     );
     """)
-
+#Create Base User
 cur.execute('INSERT into users VALUES (101,"Admin","User","admin","password");')
+cur.execute('INSERT into users VALUES (102,"System","User","system","password");')
+
+#Create 2 Content Objects
 cur.execute('INSERT into books VALUES (9781449372620,"Flask Web Development","Miguel Grinberg",237,0);')
 cur.execute('INSERT into books VALUES (9780446310789,"To Kill a Mockingbird","Harper Lee",384,4.5);')
+
+#Create 2 Clouds for Base User
+cur.execute('INSERT into clouds VALUES (1,101,"Favorite Books");')
+cur.execute('INSERT into clouds VALUES (2,101,"Books to Read");')
+cur.execute('INSERT into clouds VALUES (3,102,"My Books");')
+cur.execute('INSERT into clouds VALUES (4,102,"Terrible Books");')
 
 con.commit()
 
@@ -74,8 +92,11 @@ app.secret_key = 'lasso91'
 
 def getSessionInfo ():
     token = ''
-    if session['User_Id']>0:
-        token = True
+    print session
+    if len(session)>0:
+        if session['User_Id']>0:
+            token = True
+
     return token
 
 @app.route('/')
@@ -193,11 +214,13 @@ def dashboard():
 
     userName = session['User_Name']
 
-    """
-    conns = g.db.execute('select Identifier, FirstName, LastName from student')
-    clouds = [dict(StudentID=row[0], FirstName=row[1], LastName=row[2])
+    user_object = (session['User_Name'],session['User_Id'],)
+
+
+    conns = g.db.execute('select Identifier, UserObject, Name from clouds')
+    clouds = [dict(Identifier=row[0], UserId=row[1], Name=row[2])
                for row in conns.fetchall()]
-    """
+
     conns = g.db.execute('select Identifier, Title, Author, PageCount, AverageRating from books')
     books = [dict(Identifier=row[0], Title=row[1], Author=row[2], PageCount=row[3], AverageRating=row[4])
                 for row in conns.fetchall()]
@@ -208,7 +231,27 @@ def dashboard():
 
 
     if valid:
-        return render_template('dashboard.html', userName=userName, books=books, users=users)
+        return render_template('dashboard.html', user_object=user_object, clouds=clouds, books=books, users=users)
+    else:
+        return redirect(url_for('index'))
+
+@app.route('/cloud/add', methods=['GET', 'POST'])
+def newCloud():
+    valid = getSessionInfo()
+
+    if valid:
+        conns = g.db.execute('SELECT MAX(Identifier) FROM clouds')
+        greatest_id = 0
+        for row in conns.fetchall():
+            greatest_id = row[0]
+
+        if request.method == 'POST':
+            greatest_id += 1
+            g.db.execute('insert into clouds (Identifier, UserObject, Name) values (?, ?, ?)',
+                         [greatest_id,session['User_Id'], request.form['name']])
+            g.db.commit()
+            return redirect('/dashboard')
+        return render_template("newcloud.html")
     else:
         return redirect(url_for('index'))
 

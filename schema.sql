@@ -21,8 +21,17 @@ CREATE TABLE books (
 CREATE TABLE clouds (
   Identifier INTEGER PRIMARY KEY,
   UserObject INTEGER,
-  Book INTEGER,
+  Name TEXT,
+  FOREIGN KEY (UserObject) REFERENCES users(Identifier)
+);
+
+CREATE TABLE items (
+  Identifier INTEGER PRIMARY KEY,
+  UserObject INTEGER,
+  CloudObject INTEGER,
+  ContentObject INTEGER,
   Name TEXT,
   FOREIGN KEY (UserObject) REFERENCES users(Identifier),
-  FOREIGN KEY (Book) REFERENCES books(Identifier)
+  FOREIGN KEY (CloudObject) REFERENCES clouds(Identifier),
+  FOREIGN KEY (ContentObject) REFERENCES books(Identifier)
 );
