@@ -163,9 +163,9 @@
                     <!-- Table Header -->
                     <thead>
                         <tr>
-                            <th>Identifier</th>
+                            <th>Cloud Name</th>
                             <th>UserObject</th>
-                            <th>Name</th>
+                            <th>Id</th>
                         </tr>
                     </thead>
                     <!-- Table Header -->
@@ -176,12 +176,10 @@
                             {% if value.UserId == user_object[1] %}
                                 <tr>
                                     <td>
-                                        <a href="cloud/{{ value.Identifier }}">
-                                            {{ value.Identifier }}
-                                        </a>
+                                        <a href="cloud/{{ value.Identifier }}">{{ value.Name}}</a>
                                     </td>
                                     <td>{{ value.UserId }} </td>
-                                    <td>{{ value.Name}} </td>
+                                    <td> {{ value.Identifier }} </td>
                                 </tr><!-- Table Row -->
                             {% endif %}
                         {% endfor %}
@@ -197,6 +195,9 @@
 
         <div class="subcontainer" style="background-color:#84B8E6; color:#FFFFFF; padding:10px;text-align:center">
         TOP SEARCHED FOR BOOKS
+        </div>
+        <div class="subcontainer">
+            <a href="/search" class="button" style="width:93%">New Search</a>
         </div>
         <div class="subcontainer" style="display:">
             <div class="dashboard-buttons">
@@ -232,7 +233,7 @@
         </div>
 
 
-        <div class="subcontainer" style="display:">
+        <div class="subcontainer" style="display:none">
             <div class="dashboard-buttons">
                 <table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->
                     <!-- Table Header -->
