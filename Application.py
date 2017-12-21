@@ -35,7 +35,9 @@ cur.executescript("""
     CREATE TABLE books(
         Identifier INTEGER PRIMARY KEY, 
         Title TEXT, 
-        Author TEXT
+        Author TEXT,
+        PageCount INTEGER,
+        AverageRating INTEGER
     );
     CREATE TABLE clouds(
         Identifier INTEGER PRIMARY KEY, 
@@ -48,6 +50,8 @@ cur.executescript("""
     """)
 
 cur.execute('INSERT into users VALUES (101,"Admin","User","admin","password");')
+cur.execute('INSERT into books VALUES (9781449372620,"Flask Web Development","Miguel Grinberg",237,0);')
+cur.execute('INSERT into books VALUES (9780446310789,"To Kill a Mockingbird","Harper Lee",384,4.5);')
 
 con.commit()
 
@@ -95,7 +99,7 @@ def login():
                 session['Logged_In'] = 'Y'
                 session['User_Name'] = user_data['First Name']
                 session['User_Id'] = user_data['UserID']
-                return redirect("/")
+                return redirect("/dashboard")
             else:
                 session['Logged_In'] = 'N'
                 error = 'Incorrect login or password'
@@ -119,6 +123,25 @@ def createUser():
     if request.method == 'POST':
         print 'entering Sign Up POST'
 
+        conns = g.db.execute('SELECT MAX(Identifier) FROM users')
+        greatest_id = 0
+        for row in conns.fetchall():
+            greatest_id = row[0]
+
+        greatest_id += 1
+
+        #Create New User Record
+        g.db.execute('insert into users (Identifier, FirstName, LastName, UserId, UserPassword) values (?, ?, ?, ?, ?)',
+                     [greatest_id, request.form['fName'], request.form['lName'], request.form['userId'], request.form['userPassword']])
+        g.db.commit()
+
+        session['Logged_In'] = 'Y'
+        session['User_Name'] = request.form['fName']
+        session['User_Id'] = request.form['userId']
+
+        print session
+
+        return redirect("/dashboard")
 
     else:
         #validate Sessions Info
@@ -163,6 +186,31 @@ def LoginUser(userid,password):
     }
 
     return user_data
+
+@app.route('/dashboard')
+def dashboard():
+    valid = getSessionInfo()
+
+    userName = session['User_Name']
+
+    """
+    conns = g.db.execute('select Identifier, FirstName, LastName from student')
+    clouds = [dict(StudentID=row[0], FirstName=row[1], LastName=row[2])
+               for row in conns.fetchall()]
+    """
+    conns = g.db.execute('select Identifier, Title, Author, PageCount, AverageRating from books')
+    books = [dict(Identifier=row[0], Title=row[1], Author=row[2], PageCount=row[3], AverageRating=row[4])
+                for row in conns.fetchall()]
+
+    conns = g.db.execute('select Identifier, FirstName, LastName, UserId, UserPassword from users')
+    users = [dict(Identifier=row[0], FirstName=row[1], LastName=row[2], UserId=row[3], UserPass=row[4])
+               for row in conns.fetchall()]
+
+
+    if valid:
+        return render_template('dashboard.html', userName=userName, books=books, users=users)
+    else:
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

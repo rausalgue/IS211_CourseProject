@@ -13,7 +13,9 @@ CREATE TABLE users (
 CREATE TABLE books (
   Identifier INTEGER PRIMARY KEY,
   Title TEXT,
-  Author TEXT
+  Author TEXT,
+  PageCount INTEGER,
+  AverageRating INTEGER
 );
 
 CREATE TABLE clouds (
