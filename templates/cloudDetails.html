@@ -6,28 +6,76 @@
         background-color: #f1f1f1;
         height: 50px
     }
+    form {
+        border: 3px solid #f1f1f1;
+    }
     h2 {
         text-align: center;
     }
-    body {
-        padding: 50px
+
+    input[type=text], input[type=password] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
     }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+
+    .cancelbtn {
+        width: auto;
+        padding: 10px 18px;
+        background-color: #f44336;
+    }
+
+    .imgcontainer {
+        text-align: center;
+        margin: 24px 0 12px 0;
+    }
+
     .container {
         background-color: #f1f1f1;
         height: 100%
     }
+
     .subcontainer {
         padding-top: 50px;
         padding-left: 50px;
         padding-right: 50px;
      }
 
-    .dashboard-buttons {
-        padding: 0;
-        background-color: #3366ff;
-        color: #00000;
+    .errorMessage {
+        color: #ff0000;
+    }
 
-        text-align: center;
+    span.psw {
+        float: right;
+        padding-top: 16px;
+    }
+
+    /* Change styles for span and cancel button on extra small screens */
+    @media screen and (max-width: 300px) {
+        span.psw {
+           display: block;
+           float: none;
+        }
+        .cancelbtn {
+           width: 100%;
+        }
     }
     table a:link {
       color: #666;
@@ -151,37 +199,40 @@
             </span>
         </div>
     </header>
-    <h2>Manage Your Books</h2>
 
-    <div class="container">
-        <div class="subcontainer" style="background-color:#84B8E6; color:#FFFFFF; padding:10px; text-align:center">
-        PERSONAL BOOK CLOUDS
-        </div>
-        <div class="subcontainer" style="display:">
-            <div class="dashboard-buttons">
+    <h2>Cloud Information</h2>
+
+      <div class="container">
+          <div class="subcontainer" style="display:">
+              <div>
+                <label><b>Cloud Name: </b></label>
+                <label>{{ cloud_object [2]}}</label>
+              </div>
+
+              <div>
                 <table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->
                     <!-- Table Header -->
                     <thead>
                         <tr>
-                            <th>Identifier</th>
-                            <th>UserObject</th>
-                            <th>Name</th>
+                            <th>ISBM Number</th>
+                            <th>Book Name</th>
+                            <th>Author</th>
+                            <th>Page Count</th>
+                            <th>Rating</th>
                         </tr>
                     </thead>
                     <!-- Table Header -->
 
-                   <!-- Table Body -->
+                    <!-- Table Body -->
                     <tbody>
-                        {% for value in clouds %}
-                            {% if value.UserId == user_object[1] %}
+                        {% for value in items %}
+                            {% if value[2] == cloud_object[0] %}
                                 <tr>
-                                    <td>
-                                        <a href="cloud/{{ value.Identifier }}">
-                                            {{ value.Identifier }}
-                                        </a>
-                                    </td>
-                                    <td>{{ value.UserId }} </td>
-                                    <td>{{ value.Name}} </td>
+                                    <td>{{ value[3] }} </td>
+                                    <td>{{ value[10] }} </td>
+                                    <td>{{ value[11] }} </td>
+                                    <td>{{ value[12] }} </td>
+                                    <td>{{ value[13] }} </td>
                                 </tr><!-- Table Row -->
                             {% endif %}
                         {% endfor %}
@@ -189,84 +240,12 @@
                     </tbody>
                     <!-- Table Body -->
                 </table>
-            </div>
+              </div>
+          </div>
+          <div class="subcontainer">
+            <a href="/dashboard" class="button">Dashboard</a>
         </div>
-        <div class="subcontainer">
-            <a href="/cloud/add" class="button">Add New Cloud</a>
-        </div>
-
-        <div class="subcontainer" style="background-color:#84B8E6; color:#FFFFFF; padding:10px;text-align:center">
-        TOP SEARCHED FOR BOOKS
-        </div>
-        <div class="subcontainer" style="display:">
-            <div class="dashboard-buttons">
-                <table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->
-                    <!-- Table Header -->
-                    <thead>
-                        <tr>
-                            <th>Identifier - 13</th>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Page Count</th>
-                            <th>Average Rating</th>
-                        </tr>
-                    </thead>
-                    <!-- Table Header -->
-
-                   <!-- Table Body -->
-                    <tbody>
-                        {% for value in books %}
-                        <tr>
-                            <td>{{ value.Identifier }} </td>
-                            <td>{{ value.Title }} </td>
-                            <td>{{ value.Author}} </td>
-                            <td>{{ value.PageCount }} </td>
-                            <td>{{ value.AverageRating }} </td>
-                        </tr><!-- Table Row -->
-                        {% endfor %}
-
-                    </tbody>
-                    <!-- Table Body -->
-                </table>
-            </div>
-        </div>
-
-
-        <div class="subcontainer" style="display:">
-            <div class="dashboard-buttons">
-                <table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->
-                    <!-- Table Header -->
-                    <thead>
-                        <tr>
-                            <th>Identifier</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>User Id</th>
-                            <th>User Password</th>
-                        </tr>
-                    </thead>
-                    <!-- Table Header -->
-
-                   <!-- Table Body -->
-                    <tbody>
-                        {% for value in users %}
-                        <tr>
-                            <td>{{ value.Identifier }} </td>
-                            <td>{{ value.FirstName }} </td>
-                            <td>{{ value.LastName }} </td>
-                            <td>{{ value.UserId }} </td>
-                            <td>{{ value.UserPass }} </td>
-                        </tr><!-- Table Row -->
-                        {% endfor %}
-
-                    </tbody>
-                    <!-- Table Body -->
-                </table>
-            </div>
-        </div>
-    </div>
-
-
+      </div>
 
 </body>
 </html>

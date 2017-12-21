@@ -30,7 +30,6 @@ CREATE TABLE items (
   UserObject INTEGER,
   CloudObject INTEGER,
   ContentObject INTEGER,
-  Name TEXT,
   FOREIGN KEY (UserObject) REFERENCES users(Identifier),
   FOREIGN KEY (CloudObject) REFERENCES clouds(Identifier),
   FOREIGN KEY (ContentObject) REFERENCES books(Identifier)

@@ -7,6 +7,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
 import re
 import sqlite3 as lite
 from contextlib import closing
+import pprint
 
 DATABASE = 'book.db'
 DEBUG = True
@@ -51,25 +52,28 @@ cur.executescript("""
       UserObject INTEGER,
       CloudObject INTEGER,
       ContentObject INTEGER,
-      Name TEXT,
       FOREIGN KEY (UserObject) REFERENCES users(Identifier),
       FOREIGN KEY (CloudObject) REFERENCES clouds(Identifier),
       FOREIGN KEY (ContentObject) REFERENCES books(Identifier)
     );
     """)
 #Create Base User
-cur.execute('INSERT into users VALUES (101,"Admin","User","admin","password");')
-cur.execute('INSERT into users VALUES (102,"System","User","system","password");')
+cur.execute('INSERT into users VALUES (517101,"Admin","User","admin","password");')
+cur.execute('INSERT into users VALUES (517102,"System","User","system","password");')
 
 #Create 2 Content Objects
 cur.execute('INSERT into books VALUES (9781449372620,"Flask Web Development","Miguel Grinberg",237,0);')
 cur.execute('INSERT into books VALUES (9780446310789,"To Kill a Mockingbird","Harper Lee",384,4.5);')
 
 #Create 2 Clouds for Base User
-cur.execute('INSERT into clouds VALUES (1,101,"Favorite Books");')
-cur.execute('INSERT into clouds VALUES (2,101,"Books to Read");')
-cur.execute('INSERT into clouds VALUES (3,102,"My Books");')
-cur.execute('INSERT into clouds VALUES (4,102,"Terrible Books");')
+cur.execute('INSERT into clouds VALUES (1,517101,"Favorite Books");')
+cur.execute('INSERT into clouds VALUES (2,517101,"Books to Read");')
+cur.execute('INSERT into clouds VALUES (3,517102,"My Books");')
+cur.execute('INSERT into clouds VALUES (4,517102,"Terrible Books");')
+
+#Create Items under Favorite Books
+cur.execute('INSERT into items VALUES (11701,517101,1,9781449372620);')
+cur.execute('INSERT into items VALUES (11702,517101,2,9780446310789);')
 
 con.commit()
 
@@ -252,6 +256,33 @@ def newCloud():
             g.db.commit()
             return redirect('/dashboard')
         return render_template("newcloud.html")
+    else:
+        return redirect(url_for('index'))
+
+@app.route('/cloud/<identifier>')
+def getCloudData(identifier):
+    valid = getSessionInfo()
+
+    print identifier
+
+    if valid:
+        conns = g.db.execute('SELECT * FROM items '
+                           'JOIN users ON items.UserObject = users.Identifier '
+                           'JOIN books ON items.ContentObject = books.Identifier ')
+        items = conns.fetchall()
+
+        print (items)
+
+        conns = g.db.execute('SELECT Identifier, UserObject, Name FROM clouds where Identifier = (?)',
+                             (identifier,))
+
+        cloud_object = conns.fetchone()
+
+        print cloud_object
+        user_object = (session['User_Name'], session['User_Id'],)
+
+        return render_template('cloudDetails.html', user_object=user_object, cloud_object=cloud_object, items=items)
+
     else:
         return redirect(url_for('index'))
 
