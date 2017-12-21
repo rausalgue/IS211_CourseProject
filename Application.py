@@ -286,6 +286,32 @@ def getCloudData(identifier):
     else:
         return redirect(url_for('index'))
 
+@app.route('/search', methods=['GET', 'POST'])
+def getBookInfo():
+    valid = getSessionInfo()
+
+    if valid:
+        user_object = (session['User_Name'], session['User_Id'],)
+
+        print 'Valid',valid
+        print user_object
+
+        if request.method == 'POST':
+            print len(request.form['searchId']),request.form['searchId']
+
+            if len(request.form['searchId']) != 13:
+                error = 'Please enter a valid ISBN Number'
+                return render_template('search.html', user_object=user_object, error=error)
+            else:
+                print 'need to search for ISBN'
+                error = 'Searching...'
+                return render_template('search.html', user_object=user_object, error=error)
+        else:
+            return render_template('search.html', user_object=user_object)
+
+    else:
+        return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run()
