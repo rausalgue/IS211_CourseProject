@@ -218,7 +218,11 @@
                     <tbody>
                         {% for value in books %}
                         <tr>
-                            <td>{{ value.Identifier }} </td>
+                            <td>
+                                <a href="additem/{{ value.Identifier }}">
+                                    {{ value.Identifier }}
+                                </a>
+                            </td>
                             <td>{{ value.Title }} </td>
                             <td>{{ value.Author}} </td>
                             <td>{{ value.PageCount }} </td>

@@ -378,7 +378,7 @@ def callBookAPI(isbn):
 
     return clean_results_object
 
-@app.route('/additem/<identifier>')
+@app.route('/additem/<identifier>', methods=['GET', 'POST'])
 def getBookData(identifier):
     valid = getSessionInfo()
 
@@ -387,11 +387,17 @@ def getBookData(identifier):
 
     if valid:
         if request.method == 'POST':
+            conns = g.db.execute('SELECT MAX(Identifier) FROM items')
+            greatest_id = 0
+            for row in conns.fetchall():
+                greatest_id = row[0]
 
-            g.db.execute('insert into clouds (Identifier, UserObject, Name) values (?, ?, ?)',
-                         [greatest_id,session['User_Id'], request.form['name']])
+            greatest_id += 1
+
+            g.db.execute('insert into items (Identifier, UserObject, CloudObject, ContentObject) values (?, ?, ?, ?)',
+                         [greatest_id,session['User_Id'], request.form['cloudId'], identifier])
             g.db.commit()
-            return redirect('/cloud/'+identifier)
+            return redirect('/cloud/'+request.form['cloudId'])
         else:
             conns = g.db.execute('SELECT Identifier, UserObject, Name FROM clouds where UserObject = (?)',
                                  (session['User_Id'],))
@@ -409,6 +415,23 @@ def getBookData(identifier):
 
             if item_object is None:
                 print 'Need to add'
+                results_object = callBookAPI(identifier)
+
+                item_object_data = {
+                    "Identifier": identifier,
+                    "Name": results_object[0]['Name'],
+                    "Author": results_object[0]['Author'],
+                    "Page Count": results_object[0]['pageCount'],
+                    "Average Rating": results_object[0]['averageRating']
+                }
+
+                g.db.execute(
+                    'insert into books (Identifier, Title, Author, PageCount, AverageRating) values (?, ?, ?, ?, ?)',
+                    [identifier, results_object[0]['Name'], results_object[0]['Author'], results_object[0]['pageCount'], results_object[0]['averageRating']])
+                g.db.commit()
+
+                print item_object_data
+                print results_object
             else:
                 item_object_data = {
                     "Identifier": item_object[0],

@@ -35,7 +35,9 @@ items
 The items table contains an Identifier that links a Cloud to the book.
 The cloud in turn contains an identifier that links it to the owner of the cloud.
 
-To grow our databse, everytime we select a search result, the applicaiton adds it to our database.
+To grow our database, everytime we select a search result, the application adds it to our database.
+
+To add a new Book to our database, simply select the action button in the search results table.
 
 Try Searaching for  some of my favorites:
 
