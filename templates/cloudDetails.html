@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
     <style>
     header {
         width: 100%;
@@ -219,6 +222,7 @@
                             <th>Author</th>
                             <th>Page Count</th>
                             <th>Rating</th>
+                            <th>Remove</th>
                         </tr>
                     </thead>
                     <!-- Table Header -->
@@ -233,6 +237,11 @@
                                     <td>{{ value[11] }} </td>
                                     <td>{{ value[12] }} </td>
                                     <td>{{ value[13] }} </td>
+                                    <td>
+                                        <a href="/removeitem/{{ value[0] }}">
+                                            <i class="material-icons" style="font-size:36px">delete</i>
+                                        </a>
+                                    </td>
                                 </tr><!-- Table Row -->
                             {% endif %}
                         {% endfor %}

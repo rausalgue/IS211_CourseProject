@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+<head>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
     <style>
     header {
         width: 100%;
@@ -149,6 +152,9 @@
             <span style="float:right;padding:15px">
                 Welcome, {{ user_object[0] }}
             </span>
+            <a href="/logout">
+                <i class="material-icons" style="font-size:36px">power_settings_new</i>
+            </a>
         </div>
     </header>
     <h2>Manage Your Books</h2>
@@ -237,7 +243,7 @@
         </div>
 
 
-        <div class="subcontainer" style="display:">
+        <div class="subcontainer" style="display:none">
             <div class="dashboard-buttons">
                 <table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->
                     <!-- Table Header -->

@@ -12,7 +12,7 @@ import json
 
 
 DATABASE = 'book.db'
-DEBUG = True
+#DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'password'
@@ -448,6 +448,22 @@ def getBookData(identifier):
 
             return render_template('itemDetails.html', user_object=user_object, item_object_data=item_object_data, clouds=clouds)
 
+    else:
+        return redirect(url_for('index'))
+
+@app.route('/removeitem/<identifier>', methods=['GET', 'POST'])
+def removeItem(identifier):
+    valid = getSessionInfo()
+
+    print identifier
+    print session
+
+    if valid:
+        print 'removing item', identifier
+        g.db.execute('DELETE FROM items where Identifier = (?)',
+                             (identifier,))
+        g.db.commit()
+        return redirect('/dashboard')
     else:
         return redirect(url_for('index'))
 

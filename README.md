@@ -39,10 +39,22 @@ To grow our database, everytime we select a search result, the application adds 
 
 To add a new Book to our database, simply select the action button in the search results table.
 
-Try Searaching for  some of my favorites:
+To remove an item, simply select the trash icon under the cloud details page.
+
+Try Searching for  some of my favorites:
 
 9780446310789
 9781449372620
 9780375858871
+
+KNOWN BUGS:
+Should not allow duplicate items in clouds
+Should allow adding of new cloud under the AddItem Page
+INTERNAL ISSUES:
+Should not need to always create User Dict
+Should not be making duplicate calls to the API
+Should not be hardcoding API Results dict
+Should confirm Deletion
+Logout button Confirmation
 
 
