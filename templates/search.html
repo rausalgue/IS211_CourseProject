@@ -162,6 +162,10 @@
         color: #ff0000;
         text-align:center;
     }
+    .Message {
+        color: #8bc34a;
+        text-align:center;
+    }
     </style>
 <body>
 
@@ -192,6 +196,50 @@
                 <strong>Error:</strong> {{ error }}
             </p>
         {% endif %}
+
+        {% if message %}
+            <p class=Message>
+                {{ message }}
+            </p>
+        {% endif %}
+
+        <div class="subcontainer">
+            {{results_object}}
+        </div>
+
+        <div class="subcontainer" style="display:">
+            <div class="dashboard-buttons">
+                <table cellspacing='0'> <!-- cellspacing='0' is important, must stay -->
+                    <!-- Table Header -->
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Authot</th>
+                            <th>Published</th>
+                            <th>Date Published</th>
+                            <th>Page Count</th>
+                            <th>Average Rating</th>
+                        </tr>
+                    </thead>
+                    <!-- Table Header -->
+
+                   <!-- Table Body -->
+                    <tbody>
+                        {% for value in results_object %}
+                        <tr>
+                            <td>{{ value.Identifier }} </td>
+                            <td>{{ value['Publisher'] }} </td>
+                            <td>{{ value.Author}} </td>
+                            <td>{{ value.PageCount }} </td>
+                            <td>{{ value.AverageRating }} </td>
+                        </tr><!-- Table Row -->
+                        {% endfor %}
+
+                    </tbody>
+                    <!-- Table Body -->
+                </table>
+            </div>
+        </div>
 
         <div class="subcontainer">
             <a href="/dashboard" class="button">Dashboard</a>

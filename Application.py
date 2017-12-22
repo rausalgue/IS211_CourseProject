@@ -7,7 +7,9 @@ from flask import Flask, request, session, g, redirect, url_for, \
 import re
 import sqlite3 as lite
 from contextlib import closing
-import pprint
+import urllib2
+import json
+
 
 DATABASE = 'book.db'
 DEBUG = True
@@ -293,24 +295,80 @@ def getBookInfo():
     if valid:
         user_object = (session['User_Name'], session['User_Id'],)
 
-        print 'Valid',valid
-        print user_object
+        #print 'Valid',valid
+        #print user_object
 
         if request.method == 'POST':
-            print len(request.form['searchId']),request.form['searchId']
+            #print len(request.form['searchId']),request.form['searchId']
 
             if len(request.form['searchId']) != 13:
                 error = 'Please enter a valid ISBN Number'
                 return render_template('search.html', user_object=user_object, error=error)
             else:
                 print 'need to search for ISBN'
-                error = 'Searching...'
-                return render_template('search.html', user_object=user_object, error=error)
+                message = 'Searching for ' + request.form['searchId'] + '...'
+                results_object = callBookAPI(request.form['searchId'])
+
+                print results_object
+                return render_template('search.html', user_object=user_object, message=message, results_object=results_object)
         else:
             return render_template('search.html', user_object=user_object)
 
     else:
         return redirect(url_for('index'))
+
+def callBookAPI(isbn):
+    print isbn
+
+    clean_results_object = {}
+
+    url = 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn
+
+    print url
+
+    value = urllib2.Request(url)
+    data = urllib2.urlopen(value)
+
+    parsed_json = json.loads(data.read())
+
+    print parsed_json
+
+    print parsed_json['totalItems']
+
+    if parsed_json['totalItems'] > 0:
+        print 'results found...Formulate friendly JSON'
+
+        item_object = parsed_json['items']
+
+        print type(item_object[0]['volumeInfo'])
+
+        #Get the Title
+
+        title = item_object[0]['volumeInfo']['title']
+        publisher = item_object[0]['volumeInfo']['publisher']
+        publishedDate = item_object[0]['volumeInfo']['publishedDate']
+        pageCount = item_object[0]['volumeInfo']['pageCount']
+        averageRating = item_object[0]['volumeInfo']['averageRating']
+
+        print item_object[0]['volumeInfo']['title']
+        clean_results_object = {
+            "Success": True,
+            "Name": title,
+            "Publisher": publisher,
+            "publishedDate": publishedDate,
+            "pageCount": pageCount,
+            "averageRating": averageRating,
+            "Publisher": publisher,
+        }
+
+        print type(clean_results_object)
+    else:
+        clean_results_object = {
+            "Success": False
+        }
+    results_object = parsed_json
+
+    return clean_results_object
 
 
 if __name__ == '__main__':

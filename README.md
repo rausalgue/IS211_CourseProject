@@ -9,6 +9,8 @@ With the cloud system, add any number of clouds to categorize your book needs.
 The Search page will allow you to search for Books in the Book Database. With the ISBM number, search any book in the
 google API.
 
+Once your result is found, click on the name to view information and add to any of your clouds
+
 If you are not a beta Tester, simply create a new account with our Sign Up process from the main page.
 
 
@@ -21,4 +23,16 @@ P: password
 
 U: system
 P: password
+
+Model:
+
+The application uses four different tables:
+users
+clouds
+books
+items
+
+The items table contains an Identifier that links a Cloud to the book.
+The cloud in turn contains an identifier that links it to the owner of the cloud.
+
 
