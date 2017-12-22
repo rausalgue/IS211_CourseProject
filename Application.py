@@ -227,6 +227,8 @@ def dashboard():
     clouds = [dict(Identifier=row[0], UserId=row[1], Name=row[2])
                for row in conns.fetchall()]
 
+    print clouds
+
     conns = g.db.execute('select Identifier, Title, Author, PageCount, AverageRating from books')
     books = [dict(Identifier=row[0], Title=row[1], Author=row[2], PageCount=row[3], AverageRating=row[4])
                 for row in conns.fetchall()]
@@ -345,21 +347,25 @@ def callBookAPI(isbn):
         #Get the Title
 
         title = item_object[0]['volumeInfo']['title']
+        author = item_object[0]['volumeInfo']['authors'][0]
         publisher = item_object[0]['volumeInfo']['publisher']
         publishedDate = item_object[0]['volumeInfo']['publishedDate']
         pageCount = item_object[0]['volumeInfo']['pageCount']
         averageRating = item_object[0]['volumeInfo']['averageRating']
 
         print item_object[0]['volumeInfo']['title']
-        clean_results_object = {
-            "Success": True,
-            "Name": title,
-            "Publisher": publisher,
-            "publishedDate": publishedDate,
-            "pageCount": pageCount,
-            "averageRating": averageRating,
-            "Publisher": publisher,
-        }
+        clean_results_object = [
+            {
+                "Success": True,
+                "Name": title,
+                "Author": author,
+                "Publisher": publisher,
+                "publishedDate": publishedDate,
+                "pageCount": pageCount,
+                "averageRating": averageRating,
+                "Publisher": publisher,
+            }
+        ]
 
         print type(clean_results_object)
     else:
