@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <style>
+    form {
+
+    }
+    h2 {
+        text-align: center;
+    }
+
+    input[type=text], input[type=password], input[type=number], input[type=date] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #84B8E6;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+
+    .cancelbtn {
+        width: auto;
+        padding: 10px 18px;
+        background-color: #f44336;
+    }
+
+    .imgcontainer {
+        text-align: center;
+        margin: 24px 0 12px 0;
+    }
+
+    .container {
+        padding: 50px;
+    }
+
+    .errorMessage {
+        color: #ff0000;
+    }
+
+    span.psw {
+        float: right;
+        padding-top: 16px;
+    }
+
+    /* Change styles for span and cancel button on extra small screens */
+    @media screen and (max-width: 300px) {
+        span.psw {
+           display: block;
+           float: none;
+        }
+        .cancelbtn {
+           width: 100%;
+        }
+    }
+    </style>
+<body>
+
+    <h2>Add Book to your cloud</h2>
+    <div class="subcontainer" style="background-color:#84B8E6; color:#FFFFFF; padding:10px; text-align:center">
+        <h3>Book Information</h3>
+    </div>
+    <div class="container">
+        <label><b>ISBN:</b></label> {{item_object_data['Identifier']}} <br>
+        <label><b>Name:</b></label> {{item_object_data['Name']}} <br>
+        <label><b>Author:</b></label> {{item_object_data['Author']}} <br>
+        <label><b>Page Count:</b></label> {{item_object_data['Page Count']}} <br>
+        <label><b>Rating:</b></label> {{item_object_data['Average Rating']}} <br>
+    </div>
+    <form action="/additem/{{item_object_data['Identifier']}}" method="post">
+
+      <div class="container">
+        <label><b>Cloud Name</b></label>
+        <select name="cloudId" required>
+          <option value="">Select Cloud</option>
+          {% for value in clouds %}
+            <option value="{{value.Identifier}}"> {{ value.Name }} </option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">Add To Your Cloud</button>
+      </div>
+    </form>
+
+</body>
+</html>

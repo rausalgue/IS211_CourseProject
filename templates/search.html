@@ -233,7 +233,11 @@
                             <td>{{ value['publishedDate']}} </td>
                             <td>{{ value['pageCount'] }} </td>
                             <td>{{ value['averageRating'] }} </td>
-                            <td><i class="material-icons" style="font-size:36px">dns</i> </td>
+                            <td>
+                                <a href="additem/{{ value.Identifier }}">
+                                    <i class="material-icons" style="font-size:36px">dns</i>
+                                </a>
+                            </td>
                         </tr><!-- Table Row -->
                         {% endfor %}
 

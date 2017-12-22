@@ -164,7 +164,7 @@ def createUser():
 
         session['Logged_In'] = 'Y'
         session['User_Name'] = request.form['fName']
-        session['User_Id'] = request.form['userId']
+        session['User_Id'] = greatest_id
 
         print session
 
@@ -358,6 +358,7 @@ def callBookAPI(isbn):
         clean_results_object = [
             {
                 "Success": True,
+                "Identifier": isbn,
                 "Name": title,
                 "Author": author,
                 "Publisher": publisher,
@@ -377,6 +378,55 @@ def callBookAPI(isbn):
 
     return clean_results_object
 
+@app.route('/additem/<identifier>')
+def getBookData(identifier):
+    valid = getSessionInfo()
+
+    print identifier
+    print session
+
+    if valid:
+        if request.method == 'POST':
+
+            g.db.execute('insert into clouds (Identifier, UserObject, Name) values (?, ?, ?)',
+                         [greatest_id,session['User_Id'], request.form['name']])
+            g.db.commit()
+            return redirect('/cloud/'+identifier)
+        else:
+            conns = g.db.execute('SELECT Identifier, UserObject, Name FROM clouds where UserObject = (?)',
+                                 (session['User_Id'],))
+            clouds = [dict(Identifier=row[0], UserId=row[1], Name=row[2])
+                      for row in conns.fetchall()]
+
+            item_object_data = {}
+            # Find Book in our database
+            conns = g.db.execute('SELECT * FROM books where Identifier = (?)',
+                                 (identifier,))
+
+            item_object = conns.fetchone()
+
+            #print type(item_object)
+
+            if item_object is None:
+                print 'Need to add'
+            else:
+                item_object_data = {
+                    "Identifier": item_object[0],
+                    "Name": item_object[1],
+                    "Author": item_object[2],
+                    "Page Count": item_object[3],
+                    "Average Rating": item_object[4]
+                }
+                print item_object_data
+                print item_object
+
+
+            user_object = (session['User_Name'], session['User_Id'],)
+
+            return render_template('itemDetails.html', user_object=user_object, item_object_data=item_object_data, clouds=clouds)
+
+    else:
+        return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run()
