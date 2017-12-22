@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
     <style>
     header {
         width: 100%;
@@ -215,6 +218,7 @@
                             <th>Date Published</th>
                             <th>Page Count</th>
                             <th>Average Rating</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <!-- Table Header -->
@@ -229,6 +233,7 @@
                             <td>{{ value['publishedDate']}} </td>
                             <td>{{ value['pageCount'] }} </td>
                             <td>{{ value['averageRating'] }} </td>
+                            <td><i class="material-icons" style="font-size:36px">dns</i> </td>
                         </tr><!-- Table Row -->
                         {% endfor %}
 

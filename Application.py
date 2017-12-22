@@ -351,7 +351,8 @@ def callBookAPI(isbn):
         publisher = item_object[0]['volumeInfo']['publisher']
         publishedDate = item_object[0]['volumeInfo']['publishedDate']
         pageCount = item_object[0]['volumeInfo']['pageCount']
-        averageRating = item_object[0]['volumeInfo']['averageRating']
+        averageRating = item_object[0]['volumeInfo'].get('averageRating', '0')
+        #averageRating = item_object[0]['volumeInfo']['averageRating']
 
         print item_object[0]['volumeInfo']['title']
         clean_results_object = [
